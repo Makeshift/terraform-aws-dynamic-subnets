@@ -203,3 +203,85 @@ variable "context" {
   description = "Default context to use for passing state between label invocations"
 }
 
+variable "bastion_cidr_blocks_whitelist_host" {
+  description = "range(s) of incoming IP addresses to whitelist for the HOST"
+  type        = list(string)
+  default     = ["127.0.0.1/32"]
+}
+
+variable "bastion_cidr_blocks_whitelist_service" {
+  description = "range(s) of incoming IP addresses to whitelist for the SERVICE"
+  type        = list(string)
+  default     = ["127.0.0.1/32"]
+}
+
+variable "bastion_assume_role_arn" {
+  description = "arn for role to assume in separate identity account if used"
+  default     = ""
+}
+
+variable "bastion_custom_ssh_populate" {
+  description = "any value excludes default ssh_populate script used on container launch from userdata"
+  default     = ""
+}
+
+variable "bastion_custom_authorized_keys_command" {
+  description = "any value excludes default Go binary iam-authorized-keys built from source from userdata"
+  default     = ""
+}
+
+variable "bastion_custom_docker_setup" {
+  description = "any value excludes default docker installation and container build from userdata"
+  default     = ""
+}
+
+variable "bastion_custom_systemd" {
+  description = "any value excludes default systemd and hostname change from userdata"
+  default     = ""
+}
+
+variable "assume_role_arn" {
+  description = "arn for role to assume in separate identity account if used"
+  default     = ""
+}
+
+variable "bastion_allowed_iam_group" {
+  type        = string
+  description = "Name IAM group, members of this group will be able to ssh into bastion instances if they have provided ssh key in their profile"
+  default     = ""
+}
+
+variable "extra_user_data_content" {
+  default     = ""
+  description = "Extra user-data to add to the default built-in"
+}
+
+variable "extra_user_data_content_type" {
+  default     = "text/x-shellscript"
+  description = "What format is content in - eg 'text/cloud-config' or 'text/x-shellscript'"
+}
+
+variable "extra_user_data_merge_type" {
+  # default     = "list(append)+dict(recurse_array)+str()"
+  default     = "str(append)"
+  description = "Control how cloud-init merges user-data sections"
+}
+
+variable "bastion_service_host_key_name" {
+  description = "AWS ssh key *.pem to be used for ssh access to the bastion service host"
+  default     = ""
+}
+
+variable "instance_profile" {
+  type        = string
+  description = "The profile the instance should use to get information"
+}
+
+variable "region" {
+  type        = string
+  description = "What region are we in?"
+}
+
+variable "prefix_alphanum" {
+  type = string
+}

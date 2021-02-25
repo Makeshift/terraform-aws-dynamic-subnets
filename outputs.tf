@@ -33,22 +33,32 @@ output "nat_gateway_ids" {
   value       = aws_nat_gateway.default.*.id
 }
 
-output "nat_gateway_public_ips" {
-  description = "EIP of the NAT Gateway"
-  value       = aws_eip.default.*.public_ip
+output "nat_instance_ips" {
+  description = "List of Bastion IPs"
+  value       = aws_eip.nat_instance.*.public_ip
 }
 
-output "nat_instance_ids" {
-  description = "IDs of the NAT Instances created"
-  value       = aws_instance.nat_instance.*.id
+output "nat_instance_asg_cfn_ids" {
+  description = "The Cloudformation stacks that contain the NAT Gateway auto-scaling groups"
+  value       = aws_cloudformation_stack.autoscaling_group.*.id
 }
+
+# output "nat_gateway_public_ips" {
+#   description = "EIP of the NAT Gateway"
+#   value       = aws_eip.default.*.public_ip
+# }
+
+# output "nat_instance_ids" {
+#   description = "IDs of the NAT Instances created"
+#   value       = aws_instance.nat_instance.*.id
+# }
 
 output "availability_zones" {
   description = "List of Availability Zones where subnets were created"
   value       = var.availability_zones
 }
 
-output "nat_ips" {
-  description = "IP Addresses in use for NAT"
-  value       = coalescelist(aws_eip.default.*.public_ip, aws_eip.nat_instance.*.public_ip, data.aws_eip.nat_ips.*.public_ip, list(""))
-}
+# output "nat_ips" {
+#   description = "IP Addresses in use for NAT"
+#   value       = coalescelist(aws_eip.default.*.public_ip, aws_eip.nat_instance.*.public_ip, data.aws_eip.nat_ips.*.public_ip, list(""))
+# }
