@@ -1,9 +1,3 @@
-variable "enabled" {
-  type        = bool
-  default     = true
-  description = "Set to false to prevent the module from creating any resources"
-}
-
 variable "subnet_type_tag_key" {
   type        = string
   default     = "cpco.io/subnet/type"
@@ -39,6 +33,12 @@ variable "cidr_block" {
 variable "availability_zones" {
   type        = list(string)
   description = "List of Availability Zones where subnets will be created"
+}
+
+variable "availability_zone_attribute_style" {
+  type        = string
+  default     = "short"
+  description = "The style of Availability Zone code to use in tags and names. One of `full`, `short`, or `fixed`."
 }
 
 variable "vpc_default_route_table_id" {
@@ -77,10 +77,10 @@ variable "nat_instance_type" {
   default     = "t3.micro"
 }
 
-variable "existing_nat_ips" {
+variable "nat_elastic_ips" {
   type        = list(string)
   default     = []
-  description = "Existing Elastic IPs to attach to the NAT Gateway or Instance instead of creating a new one."
+  description = "Existing Elastic IPs to attach to the NAT Gateway(s) or Instance(s) instead of creating new ones."
 }
 
 variable "map_public_ip_on_launch" {
@@ -113,94 +113,28 @@ variable "public_subnets_additional_tags" {
   description = "Additional tags to be added to public subnets"
 }
 
-variable "additional_tag_map" {
-  type        = map(string)
-  default     = {}
-  description = "Additional tags for appending to each tag map"
+variable "metadata_http_endpoint_enabled" {
+  type        = bool
+  default     = true
+  description = "Whether the metadata service is available"
 }
 
-variable "label_order" {
-  type        = list(string)
-  default     = []
-  description = "The naming order of the ID output and Name tag"
+variable "metadata_http_put_response_hop_limit" {
+  type        = number
+  default     = 1
+  description = "The desired HTTP PUT response hop limit (between 1 and 64) for instance metadata requests."
 }
 
-variable "regex_replace_chars" {
-  type        = string
-  default     = "/[^a-zA-Z0-9-]/"
-  description = "Regex to replace chars with empty string in `namespace`, `environment`, `stage` and `name`. By default only hyphens, letters and digits are allowed, all other chars are removed"
+variable "metadata_http_tokens_required" {
+  type        = bool
+  default     = true
+  description = "Whether or not the metadata service requires session tokens, also referred to as Instance Metadata Service Version 2."
 }
 
-variable "tags" {
-  description = "Additional tags to apply to all resources that use this label module"
-  type        = map(string)
-  default     = {}
-}
-
-variable "namespace" {
-  type        = string
-  default     = ""
-  description = "Namespace, which could be your organization name or abbreviation, e.g. 'eg' or 'cp'"
-}
-
-variable "stage" {
-  type        = string
-  default     = ""
-  description = "Stage, e.g. 'prod', 'staging', 'dev', or 'test'"
-}
-
-variable "name" {
-  type        = string
-  default     = ""
-  description = "Solution name, e.g. 'app' or 'cluster'"
-}
-
-variable "environment" {
-  type        = string
-  description = "The environment name if not using stage"
-  default     = ""
-}
-
-variable "attributes" {
-  type        = list(string)
-  description = "Any extra attributes for naming these resources"
-  default     = []
-}
-
-variable "delimiter" {
-  type        = string
-  default     = "-"
-  description = "Delimiter to be used between `namespace`, `stage`, `name` and `attributes`"
-}
-
-variable "context" {
-  type = object({
-    namespace           = string
-    environment         = string
-    stage               = string
-    name                = string
-    enabled             = bool
-    delimiter           = string
-    attributes          = list(string)
-    label_order         = list(string)
-    tags                = map(string)
-    additional_tag_map  = map(string)
-    regex_replace_chars = string
-  })
-  default = {
-    namespace           = ""
-    environment         = ""
-    stage               = ""
-    name                = ""
-    enabled             = true
-    delimiter           = ""
-    attributes          = []
-    label_order         = []
-    tags                = {}
-    additional_tag_map  = {}
-    regex_replace_chars = ""
-  }
-  description = "Default context to use for passing state between label invocations"
+variable "root_block_device_encrypted" {
+  type        = bool
+  default     = true
+  description = "Whether to encrypt the root block device"
 }
 
 variable "bastion_cidr_blocks_whitelist_host" {

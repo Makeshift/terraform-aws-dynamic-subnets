@@ -1,14 +1,14 @@
 module "private_label" {
-  source     = "git::https://github.com/cloudposse/terraform-null-label.git?ref=tags/0.24.1"
-  enabled    = var.enabled
-  context    = module.label.context
-  attributes = compact(concat(module.label.attributes, ["private"]))
+  source  = "cloudposse/label/null"
+  version = "0.24.1"
 
+  attributes = ["private"]
   tags = merge(
-    module.label.tags,
     var.private_subnets_additional_tags,
-    map(var.subnet_type_tag_key, format(var.subnet_type_tag_value_format, "private"))
+    { (var.subnet_type_tag_key) = format(var.subnet_type_tag_value_format, "private") }
   )
+
+  context = module.this.context
 }
 
 locals {
@@ -17,7 +17,7 @@ locals {
 }
 
 resource "aws_subnet" "private" {
-  count             = var.enabled ? local.availability_zones_count : 0
+  count             = local.enabled ? local.availability_zones_count : 0
   vpc_id            = join("", data.aws_vpc.default.*.id)
   availability_zone = element(var.availability_zones, count.index)
 
@@ -30,16 +30,7 @@ resource "aws_subnet" "private" {
   tags = merge(
     module.private_label.tags,
     {
-      "Name" = format(
-        "%s%s%s",
-        module.private_label.id,
-        var.delimiter,
-        replace(
-          element(var.availability_zones, count.index),
-          "-",
-          var.delimiter
-        )
-      )
+      "Name" = format("%s%s%s", module.private_label.id, local.delimiter, local.az_map[element(var.availability_zones, count.index)])
     }
   )
 
@@ -50,34 +41,25 @@ resource "aws_subnet" "private" {
 }
 
 resource "aws_route_table" "private" {
-  count  = var.enabled ? local.availability_zones_count : 0
+  count  = local.enabled ? local.availability_zones_count : 0
   vpc_id = join("", data.aws_vpc.default.*.id)
 
   tags = merge(
     module.private_label.tags,
     {
-      "Name" = format(
-        "%s%s%s",
-        module.private_label.id,
-        var.delimiter,
-        replace(
-          element(var.availability_zones, count.index),
-          "-",
-          var.delimiter
-        )
-      )
+      "Name" = format("%s%s%s", module.private_label.id, local.delimiter, local.az_map[element(var.availability_zones, count.index)])
     }
   )
 }
 
 resource "aws_route_table_association" "private" {
-  count          = var.enabled ? local.availability_zones_count : 0
+  count          = local.enabled ? local.availability_zones_count : 0
   subnet_id      = element(aws_subnet.private.*.id, count.index)
   route_table_id = element(aws_route_table.private.*.id, count.index)
 }
 
 resource "aws_network_acl" "private" {
-  count      = var.enabled ? local.private_network_acl_enabled : 0
+  count      = local.enabled ? local.private_network_acl_enabled : 0
   vpc_id     = var.vpc_id
   subnet_ids = aws_subnet.private.*.id
 
