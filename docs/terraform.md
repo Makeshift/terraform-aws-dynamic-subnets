@@ -105,4 +105,7 @@
 | public\_route\_table\_ids | IDs of the created public route tables |
 | public\_subnet\_cidrs | CIDR blocks of the created public subnets |
 | public\_subnet\_ids | IDs of the created public subnets |
+<<<<<<< HEAD
+=======
 <!-- markdownlint-restore -->
+>>>>>>> master
